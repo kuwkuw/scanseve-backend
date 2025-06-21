@@ -8,12 +8,24 @@ export class Product {
   @Column()
   name: string;
 
-  @Column('decimal')
+  @Column('decimal', { nullable: false })
   price: number;
 
-  @Column({ nullable: true })
-  store?: string;
+  @Column('decimal', { nullable: true })
+  oldPrice?: number;
 
-  @Column({ name: 'product_url', nullable: true })
-  productUrl?: string;
+  @Column({ nullable: true })
+  imageUrl?: string;
+
+  @Column({ nullable: true })
+  store: string;
+
+  @Column({ nullable: true })
+  category: string;
+
+  @Column({ type: 'timestamp', nullable: false })
+  lastUpdated: Date;
+
+  @Column({ name: 'product_url', nullable: false })
+  productUrl: string;
 }

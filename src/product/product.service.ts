@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Product } from './product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 
 @Injectable()
 export class ProductService {
-  private products: Product[] = [];
-  private idCounter = 1;
+  constructor(
+    @InjectRepository(Product)
+    private productRepository: Repository<Product>,
+  ) {}
 
-  findAll(): Product[] {
-    return this.products;
+  findAll(): Promise<Product[]> {
+    return this.productRepository.find();
   }
 
-  create(dto: CreateProductDto): Product {
-    const product: Product = {
-      id: this.idCounter++,
-      ...dto,
-    };
-    this.products.push(product);
-    return product;
+  create(dto: CreateProductDto): Promise<Product> {
+    const product = this.productRepository.create(dto);
+    return this.productRepository.save(product);
   }
 }
