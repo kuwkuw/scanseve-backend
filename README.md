@@ -9,9 +9,10 @@ This is the backend API for ScanSave, built with [NestJS](https://nestjs.com/).
 ## Features
 
 - RESTful API for products (`/products`)
-- In-memory product storage (easy to swap for PostgreSQL)
+- Latest products endpoint with filtering (`/products/latest`)
 - DTO validation with `class-validator`
 - Swagger API docs at `/api`
+- In-memory product storage (easy to swap for PostgreSQL)
 - Ready for TypeORM/PostgreSQL integration
 
 ## Project Structure
@@ -35,17 +36,45 @@ src/
 
 ## Getting Started
 
-1. Install dependencies:
+1. **Install dependencies:**
    ```bash
    npm install
    ```
 
-2. Start the backend in development mode:
+2. **Configure environment:**
+   - By default, products are stored in memory.
+   - To use PostgreSQL, copy `.env.example` to `.env` and set your DB connection details.
+   - See `src/config/typeorm.config.ts` for more info.
+
+3. **Start the backend in development mode:**
    ```bash
    npm run start:dev
    ```
 
-3. Open Swagger API docs at [http://localhost:3000/api](http://localhost:3000/api)
+4. **Open Swagger API docs:**
+   [http://localhost:3000/api](http://localhost:3000/api)
+
+## API Usage
+
+### Get All Products
+- `GET /products`
+
+### Get Latest Products (with optional filtering)
+- `GET /products/latest`
+- Query parameters:
+  - `limit` (number, optional): Max number of products to return (default: 10)
+  - `category` (string, optional): Filter by category
+  - `store` (string, optional): Filter by store
+- Example:
+  ```bash
+  curl "http://localhost:3000/products/latest?limit=5&category=Electronics&store=Amazon"
+  ```
+
+### Create Product
+- `POST /products`
+- Body: JSON matching the CreateProductDto schema
+
+See the Swagger docs for full details and try out endpoints interactively.
 
 ## Testing
 
