@@ -30,6 +30,19 @@ export class ProductController {
     return this.productService.findLatestFiltered(parsedLimit, category, store);
   }
 
+  @Get('hot-deals')
+  @ApiQuery({ name: 'minDiscount', required: false, type: Number, description: 'Minimum discount percent (default 10)' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Max number of deals to return (default 10)' })
+  @ApiResponse({ status: 200, description: 'Get hot deals', type: [Product] })
+  async getHotDeals(
+    @Query('minDiscount') minDiscount?: string,
+    @Query('limit') limit?: string,
+  ): Promise<Product[]> {
+    const parsedDiscount = minDiscount ? parseInt(minDiscount, 10) : 10;
+    const parsedLimit = limit ? parseInt(limit, 10) : 10;
+    return this.productService.findHotDeals(parsedDiscount, parsedLimit);
+  }
+
   @Post()
   @ApiBody({ type: CreateProductDto })
   @ApiResponse({ status: 201, description: 'Create product', type: Product })

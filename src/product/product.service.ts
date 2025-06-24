@@ -36,4 +36,20 @@ export class ProductService {
       take: limit,
     });
   }
+
+  /**
+   * Returns products that are hot deals: oldPrice > price and at least 10% discount
+   * @param minDiscount Minimum discount percent (default 10)
+   * @param limit Max number of deals to return (default 10)
+   */
+  async findHotDeals(minDiscount: number = 10, limit: number = 10): Promise<Product[]> {
+    // For SQL: (oldPrice IS NOT NULL AND oldPrice > price AND (oldPrice - price)/oldPrice >= minDiscount/100)
+    return this.productRepository.createQueryBuilder('product')
+      .where('product.oldPrice IS NOT NULL')
+      .andWhere('product.oldPrice > product.price')
+      .andWhere('(product.oldPrice - product.price) / product.oldPrice >= :minDiscount', { minDiscount: minDiscount / 100 })
+      .orderBy('product.lastUpdated', 'DESC')
+      .limit(limit)
+      .getMany();
+  }
 }
