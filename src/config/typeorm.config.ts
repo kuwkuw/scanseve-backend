@@ -12,5 +12,6 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
   entities: [Product],
-  synchronize: true,
+  // synchronize should be false in production! Use migrations for schema changes.
+  synchronize: false,
 };
