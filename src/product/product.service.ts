@@ -27,7 +27,7 @@ export class ProductService {
    * @param store Optional store to filter
    */
   findLatestFiltered(limit: number = 10, category?: string, store?: string): Promise<Product[]> {
-    const where: any = {};
+    const where: Partial<Record<keyof Product, any>> = {};
     if (category) where.category = category;
     if (store) where.store = store;
     return this.productRepository.find({
@@ -75,7 +75,7 @@ export class ProductService {
    * Returns paginated products and the total count.
    */
   async findPaginatedOffers(limit: number = 20, offset: number = 0, category?: string, store?: string): Promise<{ products: Product[]; total: number }> {
-    const where: any = {};
+    const where: Partial<Record<keyof Product, any>> = {};
     if (category) where.category = category;
     if (store) where.store = store;
     const [products, total] = await this.productRepository.findAndCount({
