@@ -49,6 +49,13 @@ export class ProductController {
     return this.productService.findAllCategories();
   }
 
+  @Get('search')
+  @ApiQuery({ name: 'query', required: true, type: String, description: 'Search query' })
+  @ApiResponse({ status: 200, description: 'Search products', type: [Product] })
+  async search(@Query('query') query: string): Promise<Product[]> {
+    return this.productService.searchProducts(query);
+  }
+
   @Post()
   @ApiBody({ type: CreateProductDto })
   @ApiResponse({ status: 201, description: 'Create product', type: Product })

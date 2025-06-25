@@ -63,4 +63,11 @@ export class ProductService {
       .getRawMany();
     return result.map((row: { category: string }) => row.category);
   }
+
+  async searchProducts(query: string): Promise<Product[]> {
+    return this.productRepository.createQueryBuilder('product')
+      .where('LOWER(product.name) LIKE :query', { query: `%${query.toLowerCase()}%` })
+      .orderBy('product.lastUpdated', 'DESC')
+      .getMany();
+  }
 }
