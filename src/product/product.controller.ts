@@ -26,9 +26,9 @@ export class ProductController {
     @Query('category') category?: string,
     @Query('store') store?: string,
   ): Promise<Product[]> {
-    // Parse limit as integer, fallback to 10 if not provided or invalid
     const parsedLimit = limit ? parseInt(limit, 10) : 10;
-    return this.productService.findLatestFiltered(parsedLimit, category, store);
+    const { products } = await this.productService.findProducts({ limit: parsedLimit, category, store });
+    return products;
   }
 
   @Get('hot-deals')
@@ -73,12 +73,7 @@ export class ProductController {
   async getOffers(
     @Query() query: GetProductsQueryDto,
   ): Promise<{ products: Product[]; total: number }> {
-    return this.productService.findPaginatedOffers(
-      query.limit ?? 20,
-      query.offset ?? 0,
-      query.category,
-      query.store
-    );
+    return this.productService.findProducts(query);
   }
 
   @Get(':id')

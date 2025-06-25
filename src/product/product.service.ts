@@ -21,20 +21,19 @@ export class ProductService {
   }
 
   /**
-   * Returns the latest products, optionally filtered by category or store.
-   * @param limit Max number of products to return (default 10)
-   * @param category Optional category to filter
-   * @param store Optional store to filter
+   * Returns products with optional pagination and filtering.
    */
-  findLatestFiltered(limit: number = 10, category?: string, store?: string): Promise<Product[]> {
+  async findProducts({ limit = 20, offset = 0, category, store }: { limit?: number; offset?: number; category?: string; store?: string } = {}): Promise<{ products: Product[]; total: number }> {
     const where: Partial<Record<keyof Product, any>> = {};
     if (category) where.category = category;
     if (store) where.store = store;
-    return this.productRepository.find({
+    const [products, total] = await this.productRepository.findAndCount({
       where,
       order: { lastUpdated: 'DESC' },
       take: limit,
+      skip: offset,
     });
+    return { products, total };
   }
 
   /**
@@ -69,22 +68,6 @@ export class ProductService {
       .where('LOWER(product.name) LIKE :query', { query: `%${query.toLowerCase()}%` })
       .orderBy('product.lastUpdated', 'DESC')
       .getMany();
-  }
-
-  /**
-   * Returns paginated products and the total count.
-   */
-  async findPaginatedOffers(limit: number = 20, offset: number = 0, category?: string, store?: string): Promise<{ products: Product[]; total: number }> {
-    const where: Partial<Record<keyof Product, any>> = {};
-    if (category) where.category = category;
-    if (store) where.store = store;
-    const [products, total] = await this.productRepository.findAndCount({
-      where,
-      order: { lastUpdated: 'DESC' },
-      take: limit,
-      skip: offset,
-    });
-    return { products, total };
   }
 
   async findById(id: number): Promise<Product | null> {
