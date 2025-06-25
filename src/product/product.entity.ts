@@ -28,4 +28,7 @@ export class Product {
 
   @Column({ name: 'product_url', nullable: false })
   productUrl: string;
+
+  @Column({ nullable: true })
+  categoryUrl?: string;
 }
