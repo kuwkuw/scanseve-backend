@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Param, NotFoundException } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { Product } from './product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -61,5 +61,26 @@ export class ProductController {
   @ApiResponse({ status: 201, description: 'Create product', type: Product })
   async create(@Body() body: CreateProductDto): Promise<Product> {
     return this.productService.create(body);
+  }
+
+  @Get('offers')
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Max number of products to return (default 20)' })
+  @ApiQuery({ name: 'offset', required: false, type: Number, description: 'Offset for pagination (default 0)' })
+  @ApiResponse({ status: 200, description: 'Get paginated offers', type: [Product] })
+  async getOffers(
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string,
+  ): Promise<{ products: Product[]; total: number }> {
+    const parsedLimit = limit ? parseInt(limit, 10) : 20;
+    const parsedOffset = offset ? parseInt(offset, 10) : 0;
+    return this.productService.findPaginatedOffers(parsedLimit, parsedOffset);
+  }
+
+  @Get(':id')
+  @ApiResponse({ status: 200, description: 'Get product by ID', type: Product })
+  async getById(@Param('id') id: string): Promise<Product> {
+    const product = await this.productService.findById(Number(id));
+    if (product === null) throw new NotFoundException('Product not found');
+    return product;
   }
 }

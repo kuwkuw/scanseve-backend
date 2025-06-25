@@ -70,4 +70,20 @@ export class ProductService {
       .orderBy('product.lastUpdated', 'DESC')
       .getMany();
   }
+
+  /**
+   * Returns paginated products and the total count.
+   */
+  async findPaginatedOffers(limit: number = 20, offset: number = 0): Promise<{ products: Product[]; total: number }> {
+    const [products, total] = await this.productRepository.findAndCount({
+      order: { lastUpdated: 'DESC' },
+      take: limit,
+      skip: offset,
+    });
+    return { products, total };
+  }
+
+  async findById(id: number): Promise<Product | null> {
+    return this.productRepository.findOne({ where: { id } });
+  }
 }
