@@ -52,4 +52,15 @@ export class ProductService {
       .limit(limit)
       .getMany();
   }
+
+  /**
+   * Returns a list of unique product categories.
+   */
+  async findAllCategories(): Promise<string[]> {
+    const result = await this.productRepository.createQueryBuilder('product')
+      .select('DISTINCT product.category', 'category')
+      .where("product.category IS NOT NULL AND product.category != ''")
+      .getRawMany();
+    return result.map((row: { category: string }) => row.category);
+  }
 }

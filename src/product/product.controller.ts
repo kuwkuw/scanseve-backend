@@ -43,6 +43,12 @@ export class ProductController {
     return this.productService.findHotDeals(parsedDiscount, parsedLimit);
   }
 
+  @Get('categories')
+  @ApiResponse({ status: 200, description: 'Get all unique product categories', type: [String] })
+  async getCategories(): Promise<string[]> {
+    return this.productService.findAllCategories();
+  }
+
   @Post()
   @ApiBody({ type: CreateProductDto })
   @ApiResponse({ status: 201, description: 'Create product', type: Product })
