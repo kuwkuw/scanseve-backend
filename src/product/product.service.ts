@@ -74,8 +74,12 @@ export class ProductService {
   /**
    * Returns paginated products and the total count.
    */
-  async findPaginatedOffers(limit: number = 20, offset: number = 0): Promise<{ products: Product[]; total: number }> {
+  async findPaginatedOffers(limit: number = 20, offset: number = 0, category?: string, store?: string): Promise<{ products: Product[]; total: number }> {
+    const where: any = {};
+    if (category) where.category = category;
+    if (store) where.store = store;
     const [products, total] = await this.productRepository.findAndCount({
+      where,
       order: { lastUpdated: 'DESC' },
       take: limit,
       skip: offset,

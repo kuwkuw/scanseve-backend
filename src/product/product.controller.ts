@@ -3,6 +3,7 @@ import { ProductService } from './product.service';
 import { Product } from './product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ApiTags, ApiResponse, ApiBody, ApiQuery } from '@nestjs/swagger';
+import { GetProductsQueryDto } from './dto/get-products-query.dto';
 
 @ApiTags('products')
 @Controller('products')
@@ -66,14 +67,18 @@ export class ProductController {
   @Get('offers')
   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Max number of products to return (default 20)' })
   @ApiQuery({ name: 'offset', required: false, type: Number, description: 'Offset for pagination (default 0)' })
+  @ApiQuery({ name: 'category', required: false, type: String, description: 'Category to filter by' })
+  @ApiQuery({ name: 'store', required: false, type: String, description: 'Store to filter by' })
   @ApiResponse({ status: 200, description: 'Get paginated offers', type: [Product] })
   async getOffers(
-    @Query('limit') limit?: string,
-    @Query('offset') offset?: string,
+    @Query() query: GetProductsQueryDto,
   ): Promise<{ products: Product[]; total: number }> {
-    const parsedLimit = limit ? parseInt(limit, 10) : 20;
-    const parsedOffset = offset ? parseInt(offset, 10) : 0;
-    return this.productService.findPaginatedOffers(parsedLimit, parsedOffset);
+    return this.productService.findPaginatedOffers(
+      query.limit ?? 20,
+      query.offset ?? 0,
+      query.category,
+      query.store
+    );
   }
 
   @Get(':id')
