@@ -73,4 +73,15 @@ export class ProductService {
   async findById(id: number): Promise<Product | null> {
     return this.productRepository.findOne({ where: { id } });
   }
+
+  /**
+   * Returns a list of unique store names.
+   */
+  async findAllStores(): Promise<string[]> {
+    const result = await this.productRepository.createQueryBuilder('product')
+      .select('DISTINCT product.store', 'store')
+      .where("product.store IS NOT NULL AND product.store != ''")
+      .getRawMany();
+    return result.map((row: { store: string }) => row.store);
+  }
 }

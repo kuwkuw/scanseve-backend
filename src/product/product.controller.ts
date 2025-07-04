@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query, Param, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Param, NotFoundException, BadRequestException } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { Product } from './product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -76,10 +76,20 @@ export class ProductController {
     return this.productService.findProducts(query);
   }
 
+  @Get('stores')
+  @ApiResponse({ status: 200, description: 'Get all unique store names', type: [String] })
+  async getStores(): Promise<string[]> {
+    return this.productService.findAllStores();
+  }
+
   @Get(':id')
   @ApiResponse({ status: 200, description: 'Get product by ID', type: Product })
   async getById(@Param('id') id: string): Promise<Product> {
-    const product = await this.productService.findById(Number(id));
+    const parsedId = Number(id);
+    if (isNaN(parsedId)) {
+      throw new BadRequestException('Invalid product ID');
+    }
+    const product = await this.productService.findById(parsedId);
     if (product === null) throw new NotFoundException('Product not found');
     return product;
   }
